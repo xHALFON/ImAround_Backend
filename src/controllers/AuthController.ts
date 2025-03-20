@@ -4,10 +4,23 @@ import User from "../models/userModel"
 import { Request, Response } from 'express';
 import * as dotenv from "dotenv";
 import mongoose from 'mongoose';
+import crypto from 'crypto';
 
 dotenv.config()
 
-const generateToken = (id): string => {
+const generateUniqueCustomId = async (): Promise<string> => {
+    let customId;
+    let existingUser;
+    
+    do {
+        customId = crypto.randomBytes(4).toString('hex');
+        existingUser = await User.findById(customId);
+    } while (existingUser);
+    
+    return customId;
+};
+
+const generateToken = (id: string): string => {
     return jwt.sign({ id }, process.env.SECRET_KEY, { expiresIn: '1h' });
 };
 
@@ -26,12 +39,20 @@ class AuthController {
                 return;
             }
 
+            // Generate custom ID
+            const customId = await generateUniqueCustomId();
+            
             const hashedPassword = await bcrypt.hash(password, 10);
-            const user = new User({ username, email, password: hashedPassword});
+            const user = new User({ 
+                _id: customId, // Set custom ID
+                username, 
+                email, 
+                password: hashedPassword
+            });
             await user.save();
 
             res.status(201).json({
-                id: user._id,
+                id: user._id, // This will now be the 8-character ID
                 username: user.username,
                 email: user.email,
                 token: generateToken(user._id.toString()),
@@ -60,7 +81,7 @@ class AuthController {
             user.refreshToken = refreshToken;
             await user.save();
             res.json({
-                id: user._id,
+                id: user._id, // This will be the 8-character ID
                 username: user.username,
                 email: user.email,
                 accessToken: generateToken(user._id.toString()),
@@ -71,6 +92,5 @@ class AuthController {
         }
     }
 }
-
 
 export default new AuthController();
