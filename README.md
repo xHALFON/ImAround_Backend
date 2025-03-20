@@ -19,6 +19,13 @@
 }
 ```
 
+* #### Post - /search/findUsers
+
+```bash
+{
+    userIds: ["Id1", "Id2"]
+}
+```
+
 ### Feature routes:
-* #### Post - /search/findnear
 * #### Get - user/profile

@@ -1,7 +1,8 @@
 import express from 'express'
 import bodyParser from 'body-parser';
 import { connectDB } from './utils/connectDB';
-import authRoutes from './routes/authRoutes'
+import authRoutes from './routes/authRoutes';
+import searchRoutes from './routes/searchRoutes';
 
 const app = express();
 app.use(express.json());
@@ -15,5 +16,6 @@ app.get("/", (req, res) => {
 connectDB();
 
 app.use("/auth", authRoutes)
+app.use("/search", searchRoutes)
 
 export default app;
