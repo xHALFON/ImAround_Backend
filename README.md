@@ -26,6 +26,8 @@
     userIds: ["Id1", "Id2"]
 }
 ```
+* #### Get - /auth/fetchProfile
 
-### Feature routes:
-* #### Get - user/profile
+```bash
+http://localhost:3000/auth/fetchProfile/{userId}
+```
