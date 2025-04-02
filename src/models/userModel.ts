@@ -8,6 +8,7 @@ interface IUser extends Document {
     email: string;
     password: string;
     birthDate: Date;
+    about: string;
     refreshToken: String;
 }
 
@@ -19,6 +20,7 @@ const userSchema = new Schema<IUser>({
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     birthDate: { type: Date, required: true },
+    about: { type: String, required: false },
     refreshToken: String,
 });
 

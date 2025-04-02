@@ -117,6 +117,36 @@ class AuthController {
             res.status(500).json({ message: "Internal server error", error: error.message });
         }
     }
+
+    updateAbout = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const { userId, aboutContent } = req.body;
+    
+            const updatedUser = await User.findOneAndUpdate(
+                { _id: userId }, 
+                { about: aboutContent }, 
+                { new: true }
+            );
+    
+            if (!updatedUser) {
+                res.status(404).json({ message: "User not found" });
+                return;
+            }
+    
+            res.json({
+                id: updatedUser._id,
+                avatar: updatedUser.avatar,
+                firstName: updatedUser.firstName,
+                lastName: updatedUser.lastName,
+                email: updatedUser.email,
+                birthDate: updatedUser.birthDate,
+                about: updatedUser.about,
+            });
+        } catch (error) {
+            res.status(500).json({ message: "Internal server error", error: error.message });
+        }
+    };
+    
 }
 
 export default new AuthController();

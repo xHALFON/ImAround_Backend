@@ -31,3 +31,11 @@
 ```bash
 http://localhost:3000/auth/fetchProfile/{userId}
 ```
+
+* #### Post - auth/updateAbout
+```bash
+{
+    "userId": "d98f5163",
+    "aboutContent": "New About"
+}
+```
