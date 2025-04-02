@@ -28,7 +28,7 @@ class AuthController {
     register = async (req: Request, res: Response): Promise<void> => {
         try{
             const { firstName, lastName, avatar, birthDate, email, password} = req.body;
-
+            
             if (!password) {
                 res.status(400).json({ message: 'Password must provided' });
                 return;
@@ -50,7 +50,7 @@ class AuthController {
                 lastName, 
                 email, 
                 password: hashedPassword,
-                birthDate,
+                birthDate: new Date(birthDate.split("/").reverse().join("-")),
             });
             await user.save();
 
@@ -64,6 +64,7 @@ class AuthController {
                 token: generateToken(user._id.toString()),
             });
         } catch (error) {
+            console.log(error.message);
             res.status(500).json({ message: error.message });
         }
     }
