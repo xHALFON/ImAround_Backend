@@ -5,6 +5,5 @@ import MatchController from "../controllers/MatchController";
 const router = express.Router()
 
 router.post('/like', MatchController.like);
-router.post('/like', MatchController.like);
 
 export default router;
