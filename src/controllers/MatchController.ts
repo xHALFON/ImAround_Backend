@@ -47,7 +47,7 @@ class SearchController {
             const matchFields = await Match.find({participants: {$in: userId}})
             const matchs = [];
             for(const matchField of matchFields){
-                if(matchField.liked[0] == userId){
+                if(matchField.liked[0] == userId && matchField.liked.length == 2){
                     console.log(matchField);
                     matchs.push(matchField.toObject());
                     console.log(matchs);
