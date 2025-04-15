@@ -17,7 +17,8 @@ class SearchController {
             if (!searchMatch) {
                 const match = new Match({
                     participants: [userLike, userLiked],
-                    liked: [userLike]
+                    liked: [userLike],
+                    seen: false,
                 });
                 await match.save();
                 res.status(200).json({ message: `${userLike} liked ${userLiked}` });
@@ -50,9 +51,9 @@ class SearchController {
                     console.log(matchField);
                     matchs.push(matchField.toObject());
                     console.log(matchs);
+                    matchField.seen = true;
+                    matchField.save();
                 }
-                matchField.seen = true;
-                matchField.save();
             }
             
             res.status(200).json({matchs: matchs});
