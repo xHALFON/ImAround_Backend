@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import * as dotenv from "dotenv";
 import Match from "../models/matchModel";
+import { match } from 'assert';
 
 dotenv.config()
 
@@ -38,6 +39,23 @@ class SearchController {
             res.status(500).json({ message: error.message });
         }
     };
+
+    checkMatch = async (req: Request, res: Response): Promise<void> => {
+        try{
+            const { userId } = req.params;
+            const matchFields = await Match.find({participants: {$in: userId}})
+            const matchs = [];
+            for(const matchField of matchFields){
+                if(matchField.liked.length == 2){
+                    matchs.push(matchField);
+                }
+            }
+            
+            res.status(200).json({matchs: matchs});
+        } catch(e){
+            res.status(500).json("Error in checking match:" + e);
+        }
+    }
 }
 
 export default new SearchController();
