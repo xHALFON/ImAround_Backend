@@ -47,8 +47,12 @@ class SearchController {
             const matchs = [];
             for(const matchField of matchFields){
                 if(matchField.liked.length == 2){
-                    matchs.push(matchField);
+                    console.log(matchField);
+                    matchs.push(matchField.toObject());
+                    console.log(matchs);
                 }
+                matchField.seen = true;
+                matchField.save();
             }
             
             res.status(200).json({matchs: matchs});
