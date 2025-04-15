@@ -3,6 +3,7 @@ import bodyParser from 'body-parser';
 import { connectDB } from './utils/connectDB';
 import authRoutes from './routes/authRoutes';
 import searchRoutes from './routes/searchRoutes';
+import matchRoutes from './routes/matchRoutes'
 import cors from 'cors'
 
 const app = express();
@@ -23,5 +24,6 @@ connectDB();
 
 app.use("/auth", authRoutes)
 app.use("/search", searchRoutes)
+app.use("/match", matchRoutes)
 
 export default app;
