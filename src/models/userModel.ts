@@ -10,6 +10,7 @@ interface IUser extends Document {
     birthDate: Date;
     about: string;
     refreshToken: String;
+    hobbies: string[]; // Added hobbies field
 }
 
 const userSchema = new Schema<IUser>({
@@ -21,6 +22,7 @@ const userSchema = new Schema<IUser>({
     password: { type: String, required: true },
     birthDate: { type: Date, required: true },
     about: { type: String, required: false },
+    hobbies: { type: [String], required: false, default: [] }, // Added hobbies array field
     refreshToken: String,
 });
 

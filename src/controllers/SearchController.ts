@@ -8,7 +8,9 @@ import mongoose from 'mongoose';
 dotenv.config()
 
 class SearchController {
+    
     search = async (req: Request, res: Response): Promise<void> => {
+        console.log("\x1b[32m%s\x1b[0m", req.body.userIds+" Entered SearchController");
         try {
             const usersIds = req.body.userIds;
     

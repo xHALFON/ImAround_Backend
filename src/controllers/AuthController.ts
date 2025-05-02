@@ -26,8 +26,10 @@ const generateToken = (id: string): string => {
 
 class AuthController {
     register = async (req: Request, res: Response): Promise<void> => {
+        console.log("Entered RegisterController");
+        console.log("Request Register body: ", req.body);
         try{
-            const { firstName, lastName, avatar, birthDate, email, password} = req.body;
+            const { firstName, lastName, avatar, birthDate, email, password,hobbies} = req.body;
             
             if (!password) {
                 res.status(400).json({ message: 'Password must provided' });
@@ -51,6 +53,7 @@ class AuthController {
                 email, 
                 password: hashedPassword,
                 birthDate: new Date(birthDate.split("/").reverse().join("-")),
+                hobbies: hobbies || [], // Add hobbies with empty array default
             });
             await user.save();
 
@@ -61,6 +64,7 @@ class AuthController {
                 lastName: user.lastName,
                 email: user.email,
                 birthDate: user.birthDate,
+                hobbies: user.hobbies, // Include hobbies in the respons
                 token: generateToken(user._id.toString()),
             });
         } catch (error) {
@@ -70,6 +74,7 @@ class AuthController {
     }
 
     login = async (req: Request, res: Response): Promise<void> => {
+        console.log("Entered LoginController");
         try {
             const { email, password } = req.body;
             const user = await User.findOne({ email });
@@ -103,6 +108,7 @@ class AuthController {
     }
 
     fetchProfile = async (req: Request, res: Response): Promise<void> => {
+        console.log("Entered FetchProfileController");
         try {
             const { userId } = req.params;
             
@@ -112,7 +118,7 @@ class AuthController {
                 res.status(404).json({ message: "User not found" });
                 return;
             }
-    
+            console.log("User found: ", user);
             res.json(user);
         } catch (error) {
             res.status(500).json({ message: "Internal server error", error: error.message });
