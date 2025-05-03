@@ -8,22 +8,20 @@ import mongoose from 'mongoose';
 dotenv.config()
 
 class SearchController {
-    
-    search = async (req: Request, res: Response): Promise<void> => {
-        console.log("\x1b[32m%s\x1b[0m", req.body.userIds+" Entered SearchController");
+    search = async (ids: string[]): Promise<any> => {
+        console.log("\x1b[32m%s\x1b[0m", ids+" Entered SearchController");
         try {
-            const usersIds = req.body.userIds;
+            const usersIds = ids;
     
             if (!usersIds || !Array.isArray(usersIds)) {
-                res.status(400).json({ message: 'Invalid users input' });
-                return;
+                return { message: 'Invalid users input' };
             }
     
             const users = await User.find({ _id: { $in: usersIds } });
     
-            res.json(users);
+            return users
         } catch (error) {
-            res.status(500).json({ message: 'Server error', error });
+          return { message: 'Server error', error };
         }
     };
 }
