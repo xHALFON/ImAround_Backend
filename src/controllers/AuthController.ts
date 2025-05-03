@@ -29,7 +29,7 @@ class AuthController {
         console.log("Entered RegisterController");
         console.log("Request Register body: ", req.body);
         try{
-            const { firstName, lastName, avatar, birthDate, email, password,hobbies} = req.body;
+            const { firstName, lastName, avatar, birthDate, email, password,about, occupation,hobbies} = req.body;
             
             if (!password) {
                 res.status(400).json({ message: 'Password must provided' });
@@ -53,6 +53,8 @@ class AuthController {
                 email, 
                 password: hashedPassword,
                 birthDate: new Date(birthDate.split("/").reverse().join("-")),
+                about: about || "",
+                occupation: occupation || "",
                 hobbies: hobbies || [], // Add hobbies with empty array default
             });
             await user.save();
@@ -64,6 +66,8 @@ class AuthController {
                 lastName: user.lastName,
                 email: user.email,
                 birthDate: user.birthDate,
+                about: user.about,
+                occupation: user.occupation,
                 hobbies: user.hobbies, // Include hobbies in the respons
                 token: generateToken(user._id.toString()),
             });
