@@ -160,6 +160,7 @@ class AuthController {
         }
     };
 
+
     updateProfile = async (req: Request, res: Response): Promise<void> => {
         try {
             const { id } = req.params;
@@ -184,7 +185,35 @@ class AuthController {
             res.status(500).json({ message: "Internal server error", error: error.message });
         }
     };
-    
+
+    getUserById = async (req: Request, res: Response): Promise<void> => {
+        console.log("Entered getUserByIdController");
+        try {
+            const { userId } = req.params;
+            
+            const user = await User.findOne({_id: userId});
+            
+            if (!user) {
+                res.status(404).json({ message: "User not found" });
+                return;
+            }
+            console.log("User found by ID: ", user);
+            res.json({
+                id: user._id,
+                avatar: user.avatar,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email,
+                birthDate: user.birthDate,
+                about: user.about,
+                occupation: user.occupation,
+                hobbies: user.hobbies
+            });
+        } catch (error) {
+            res.status(500).json({ message: "Internal server error", error: error.message });
+        }
+    }
+
 }
 
 export default new AuthController();

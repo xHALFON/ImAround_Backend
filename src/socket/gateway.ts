@@ -1,5 +1,6 @@
 import { Server, Socket } from 'socket.io';
 import SearchController from "../controllers/SearchController"
+import app from '..';
 
 // Store active user connections
 const userSockets = new Map<string, string>();
@@ -27,19 +28,14 @@ export const setupSocketEvents = (io: Server) => {
 };
 
 // Helper function to send match notification to a specific user
-export const notifyMatch = (io: Server, users: string[], matchData: any) => {
+export const notifyMatch = ( users: string[], matchData: any) => {
     users.forEach(userId => {
         const socketId = userSockets.get(userId);
         if (socketId) {
-            io.to(socketId).emit('new_match', matchData);
+           app.get('io').to(socketId).emit('new_match', matchData);
             console.log(`Match notification sent to user ${userId}`);
         } else {
             console.log(`User ${userId} is not connected, couldn't send match notification`);
         }
     });
-};
-
-// Get the io instance from anywhere in the application
-export const getSocketIO = (app: any): Server => {
-    return app.get('io');
 };
