@@ -3,6 +3,7 @@ import * as dotenv from "dotenv";
 import Match from "../models/matchModel";
 import { match } from 'assert';
 import { notifyMatch } from '../socket/gateway';
+import ChatController from './ChatController';
 
 dotenv.config()
 
