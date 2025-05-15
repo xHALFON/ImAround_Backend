@@ -5,6 +5,7 @@ import authRoutes from './routes/authRoutes';
 import searchRoutes from './routes/searchRoutes';
 import matchRoutes from './routes/matchRoutes'
 import cors from 'cors';
+import chatRoutes from './routes/ChatRoutes'
 
 
 
@@ -29,7 +30,7 @@ connectDB();
 app.use("/auth", authRoutes)
 app.use("/search", searchRoutes)
 app.use("/match", matchRoutes)
-
+app.use("/chat", chatRoutes)
 
 
 

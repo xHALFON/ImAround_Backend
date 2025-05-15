@@ -12,4 +12,6 @@ router.get('/match/:matchId', ChatController.getChatByMatchId);
 // Mark messages as read
 router.put('/:chatId/read/:userId', ChatController.markMessagesAsRead);
 
+router.get('/details/:userId', ChatController.getUser); 
+
 export default router;

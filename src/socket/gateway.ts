@@ -40,6 +40,7 @@ export const setupSocketServer = (server: http.Server) => {
     }) => {
       try {
         // Find the chat for this match
+        console.log('hi')
         let chat = await Chat.findOne({ matchId: data.matchId });
         
         // If chat doesn't exist yet, create it
@@ -100,7 +101,77 @@ export const setupSocketServer = (server: http.Server) => {
         })
         .catch(err => console.error('Error handling typing indicator:', err));
     });
-    
+    // Handle marking messages as read
+    socket.on('mark_messages_as_read', async (data: {
+      chatId: string,
+      userId: string,
+      matchId: string
+    }) => {
+      try {
+        console.log('=== MARK MESSAGES AS READ EVENT ===');
+        console.log('Chat ID:', data.chatId);
+        console.log('User ID (reader):', data.userId);
+        console.log('Match ID:', data.matchId);
+        
+        // Find the chat
+        const chat = await Chat.findById(data.chatId);
+        
+        if (!chat) {
+          console.log('ERROR: Chat not found for ID:', data.chatId);
+          return socket.emit('message_error', { error: 'Chat not found' });
+        }
+        
+        console.log('Found chat with', chat.messages.length, 'messages');
+        console.log('Chat participants:', chat.participants);
+        
+        // Mark messages as read where the sender is not the current user
+        let updated = false;
+        let updatedCount = 0;
+        let messagesSenders = new Set<string>(); // Track who sent the messages that were marked as read
+        
+        chat.messages.forEach(message => {
+          const messageSender = message.sender.toString();
+          const currentUserId = data.userId.toString();
+          
+          if (messageSender !== currentUserId && !message.read) {
+            console.log('Marking message as read:', message.content.substring(0, 30) + '...');
+            message.read = true;
+            updated = true;
+            updatedCount++;
+            messagesSenders.add(messageSender); // Add sender to the set
+          }
+        });
+        
+        console.log('Updated', updatedCount, 'messages');
+        
+        if (updated) {
+          await chat.save();
+          console.log('Chat saved successfully');
+          
+          // Send messages_read event only to the senders of the messages that were marked as read
+          messagesSenders.forEach(senderId => {
+            const senderSocketId = userSockets.get(senderId);
+            console.log(`Checking sender ${senderId}, socket ID: ${senderSocketId}`);
+            
+            if (senderSocketId) {
+              console.log('Sending messages_read event to sender:', senderId);
+              io.to(senderSocketId).emit('messages_read', {
+                matchId: data.matchId,
+                readBy: data.userId
+              });
+              console.log('messages_read event sent successfully to:', senderId);
+            } else {
+              console.log('Sender socket not found - user not connected:', senderId);
+            }
+          });
+        } else {
+          console.log('No messages needed to be updated');
+        }
+      } catch (error) {
+        console.error('Error marking messages as read:', error);
+        socket.emit('message_error', { error: 'Failed to mark messages as read' });
+      }
+    });
     // Handle stopped typing
     socket.on('stop_typing', (data: { matchId: string, userId: string }) => {
       // Similar to typing but with isTyping: false
