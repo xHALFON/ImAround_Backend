@@ -5,6 +5,7 @@ import { Request, Response } from 'express';
 import * as dotenv from "dotenv";
 import mongoose from 'mongoose';
 import crypto from 'crypto';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 dotenv.config()
 
@@ -214,6 +215,72 @@ class AuthController {
         }
     }
 
+    analyzeProfilePhoto = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const { imageBase64 } = req.body;
+            console.log(imageBase64);
+            if (!imageBase64) {
+                res.status(400).json({ message: 'No image provided' });
+                return;
+            }
+            
+            if (!this.isValidBase64(imageBase64)) {
+                res.status(400).json({ message: 'Invalid image format' });
+                return;
+            }
+
+            const prompt = `Analyze this dating profile photo and provide brief, constructive feedback.
+            Focus only on these aspects:
+            1. Composition (framing, angle, background)
+            2. Lighting and clarity
+            3. Facial expression and posture
+            4. Overall profile photo suitability
+
+            Provide feedback as a single concise paragraph (max 3-4 sentences) focusing only on how to make this a better dating profile photo. 
+            Do not mention appearance in judgmental ways - focus on technical and practical aspects. 
+            Be very brief but helpful. Match the tone of a friendly professional photographer.`;
+
+            const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
+            const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+
+            const imagePart = {
+                inlineData: {
+                    data: imageBase64,
+                    mimeType: 'image/jpeg'
+                }
+            };
+            
+            const result = await model.generateContent([prompt, imagePart]);
+            const response = result.response;
+            const text = response.text();
+            
+            res.status(200).json({ feedback: text });
+            
+        } catch (error) {
+            console.error('Error analyzing profile photo:', error);
+            res.status(500).json({ 
+                message: 'Failed to analyze photo', 
+                error: error.message 
+            });
+        }
+    };
+
+    private isValidBase64(str: string): boolean {
+        try {
+            if (!str.startsWith('data:image')) {
+                if (/^[A-Za-z0-9+/=]+$/.test(str)) {
+                    return true;
+                }
+                return false;
+            }
+            const base64Regex = /^data:image\/([a-zA-Z]*);base64,([A-Za-z0-9+/=]*)$/;
+            const matches = str.match(base64Regex);
+            
+            return !!matches;
+        } catch (e) {
+            return false;
+        }
+    }
 }
 
 export default new AuthController();
