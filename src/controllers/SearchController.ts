@@ -11,6 +11,7 @@ class SearchController {
     search = async (req: Request, res: Response): Promise<void> => {
         console.log("\x1b[32m%s\x1b[0m", req.body.userIds+" Entered SearchController");
         try {
+            const id = req.body.id
             const usersIds = req.body.userIds;
     
             if (!usersIds || !Array.isArray(usersIds)) {
@@ -18,7 +19,9 @@ class SearchController {
                 return;
             }
     
-            const users = await User.find({ _id: { $in: usersIds } });
+            let users = await User.find({ _id: { $in: usersIds } });
+            
+            users = users.filter((user) => !id.dislike.includes(user._id.toString()));
     
             res.json(users);
         } catch (error) {
