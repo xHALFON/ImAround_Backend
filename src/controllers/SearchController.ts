@@ -23,6 +23,8 @@ class SearchController {
             let users = await User.find({ _id: { $in: usersIds } });
             
             users = users.filter((user) => !selfUser.dislike?.includes(user._id.toString()));
+         
+            res.json(users);
         } catch (error) {
             res.status(500).json({ message: 'Server error', error });
         }
