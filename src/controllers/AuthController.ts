@@ -172,7 +172,7 @@ class AuthController {
             const updatedUser = await User.findByIdAndUpdate(
                 id,
                 { $set: updatedFields }, // <- FORCE the set including hobbies
-                { new: true }
+                { new: true } 
             );
     
             if (!updatedUser) {
