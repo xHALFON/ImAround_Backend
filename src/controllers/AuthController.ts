@@ -30,7 +30,7 @@ class AuthController {
         console.log("Entered RegisterController");
         console.log("Request Register body: ", req.body);
         try {
-            const { firstName, lastName, avatar, birthDate, email, password, about, occupation, hobbies } = req.body;
+            const { firstName, lastName, avatar, birthDate, email, password, about, occupation, hobbies,genderInterest } = req.body;
 
             if (!password) {
                 res.status(400).json({ message: 'Password must be provided' });
@@ -56,6 +56,7 @@ class AuthController {
                 birthDate: new Date(birthDate.split("/").reverse().join("-")),
                 about: about || "",
                 occupation: occupation || "",
+                genderInterest: genderInterest || "",
                 hobbies: hobbies || [],
             });
 
