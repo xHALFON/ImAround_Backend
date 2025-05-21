@@ -320,6 +320,29 @@ class AuthController {
             return false;
         }
     }
+
+
+    deleteUser = async (req: Request, res: Response): Promise<void> => {
+        console.log("Entered DeleteUserController");
+        try {
+            const { userId } = req.params;
+    
+            // Find and delete the user by ID
+            const deletedUser = await User.findByIdAndDelete(userId);
+    
+            if (!deletedUser) {
+                res.status(404).json({ message: "User not found" });
+                return;
+            }
+    
+            res.status(200).json({ message: "User deleted successfully", userId });
+        } catch (error) {
+            console.error("Error deleting user:", error);
+            res.status(500).json({ message: "Internal server error", error: error.message });
+        }
+    };
 }
+
+
 
 export default new AuthController();

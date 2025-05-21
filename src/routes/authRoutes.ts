@@ -11,6 +11,7 @@ router.post('/updateAbout', AuthController.updateAbout);
 router.put('/users/:id', AuthController.updateProfile);
 router.get('/getUserById/:userId', AuthController.getUserById);
 router.post('/analyzeProfilePhoto', AuthController.analyzeProfilePhoto);
+router.delete('/deleteUser/:userId', AuthController.deleteUser);
 
 
 export default router;
