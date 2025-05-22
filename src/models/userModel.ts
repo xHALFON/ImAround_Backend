@@ -9,11 +9,12 @@ interface IUser extends Document {
     password: string;
     birthDate: Date;
     about: string;
-    occupation: string; // Added occupation field
+    occupation: string;
+    gender: string; // Added gender field for user's own gender
     refreshToken: String;
-    hobbies: string[]; // Added hobbies field
+    hobbies: string[];
     dislike: string[];
-    genderInterest: String;
+    genderInterest: String; // Who they're interested in dating
 }
 
 const userSchema = new Schema<IUser>({
@@ -25,9 +26,10 @@ const userSchema = new Schema<IUser>({
     password: { type: String, required: true },
     birthDate: { type: Date, required: true },
     about: { type: String, required: false },
-    occupation: { type: String, required: false }, // Added occupation field
-    genderInterest: { type: String, required: false },
-    hobbies: { type: [String], required: false, default: [] }, // Added hobbies array field
+    occupation: { type: String, required: false },
+    gender: { type: String, required: false }, // Added gender field (Male/Female)
+    genderInterest: { type: String, required: false }, // Who they want to date
+    hobbies: { type: [String], required: false, default: [] },
     dislike: { type: [String], required: false, default: [] },
     refreshToken: String,
 });

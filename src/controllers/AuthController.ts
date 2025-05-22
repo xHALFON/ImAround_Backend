@@ -30,22 +30,34 @@ class AuthController {
         console.log("Entered RegisterController");
         console.log("Request Register body: ", req.body);
         try {
-            const { firstName, lastName, avatar, birthDate, email, password, about, occupation, hobbies,genderInterest } = req.body;
-
+            const { 
+                firstName, 
+                lastName, 
+                avatar, 
+                birthDate, 
+                email, 
+                password, 
+                about, 
+                occupation, 
+                hobbies, 
+                genderInterest,
+                gender  // Added gender field
+            } = req.body;
+    
             if (!password) {
                 res.status(400).json({ message: 'Password must be provided' });
                 return;
             }
-
+    
             const userExists_email = await User.findOne({ email });
             if (userExists_email) {
                 res.status(400).json({ message: 'Email already exists' });
                 return;
             }
-
+    
             const customId = await generateUniqueCustomId();
             const hashedPassword = await bcrypt.hash(password, 10);
-
+    
             const user = new User({
                 _id: customId,
                 avatar,
@@ -56,12 +68,13 @@ class AuthController {
                 birthDate: new Date(birthDate.split("/").reverse().join("-")),
                 about: about || "",
                 occupation: occupation || "",
+                gender: gender || "", // Added gender field
                 genderInterest: genderInterest || "",
                 hobbies: hobbies || [],
             });
-
+    
             await user.save();
-
+    
             res.status(201).json({
                 id: user._id,
                 avatar: user.avatar,
@@ -71,6 +84,8 @@ class AuthController {
                 birthDate: user.birthDate,
                 about: user.about,
                 occupation: user.occupation,
+                gender: user.gender, // Include gender in response
+                genderInterest: user.genderInterest,
                 hobbies: user.hobbies,
                 token: generateToken(user._id.toString()),
             });
