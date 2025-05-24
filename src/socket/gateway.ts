@@ -2,6 +2,8 @@ import { Server } from 'socket.io';
 import http from 'http';
 import Chat from '../models/ChatModels';
 import ChatController from '../controllers/ChatController';
+import FirebaseService from '../utils/FirebaseService'; // 🔥 הוסף
+import User from '../models/userModel'; // 🔥 הוסף
 import app from '..'
 
 const userSockets = new Map<string, string>(); // userId -> socketId
@@ -31,7 +33,7 @@ export const setupSocketServer = (server: http.Server) => {
       }
     });
     
-    // Handle new chat message
+    // Handle new chat message - 🔥 עדכן את זה
     socket.on('send_message', async (data: {
       matchId: string,
       sender: string,
@@ -67,6 +69,10 @@ export const setupSocketServer = (server: http.Server) => {
             matchId: data.matchId,
             message: newMessage
           });
+        } else {
+          // 🔥 אם המשתמש לא מחובר - שלח FCM notification
+          console.log(`User ${data.recipient} not connected, sending FCM notification`);
+          await sendMessageNotification(data.sender, data.recipient, data.content, data.matchId);
         }
         
         // Send confirmation to sender
@@ -196,6 +202,38 @@ export const setupSocketServer = (server: http.Server) => {
   });
   
   return io;
+};
+
+// 🔥 הוסף פונקציה חדשה לFCM הודעות
+const sendMessageNotification = async (
+  senderId: string, 
+  recipientId: string, 
+  messageContent: string, 
+  matchId: string
+) => {
+  try {
+    // קבל נתוני השולח והמקבל
+    const [sender, recipient] = await Promise.all([
+      User.findById(senderId),
+      User.findById(recipientId)
+    ]);
+    
+    if (!recipient?.fcmToken) {
+      console.log(`Recipient ${recipientId} has no FCM token`);
+      return;
+    }
+    
+    const senderName = sender ? `${sender.firstName} ${sender.lastName}` : 'Someone';
+    
+    await FirebaseService.sendMessageNotification(
+      recipient.fcmToken,
+      senderName,
+      messageContent,
+      matchId
+    );
+  } catch (error) {
+    console.error('Error sending message notification:', error);
+  }
 };
 
 // Modify this to also create a chat when a match is created
