@@ -15,6 +15,8 @@ interface IUser extends Document {
     hobbies: string[];
     dislike: string[];
     genderInterest: String; // Who they're interested in dating
+    fcmToken: string; // 🔥 הוסף FCM Token
+    lastTokenUpdate: Date; // 🔥 מתי הטוקן עודכן בפעם האחרונה
 }
 
 const userSchema = new Schema<IUser>({
@@ -32,6 +34,8 @@ const userSchema = new Schema<IUser>({
     hobbies: { type: [String], required: false, default: [] },
     dislike: { type: [String], required: false, default: [] },
     refreshToken: String,
+    fcmToken: { type: String, required: false, default: null }, // 🔥 FCM Token חדש
+    lastTokenUpdate: { type: Date, required: false, default: Date.now } // 🔥 תאריך עדכון
 });
 
 const User = mongoose.model<IUser>('User', userSchema);
